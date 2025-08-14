@@ -2,5 +2,8 @@
   "files.associations": {
     "mutex": "cpp",
     "functional": "cpp"
-  }
+  },
+  "plantuml.exportFormat": "png",
+  "plantuml.trace.server": "verbose",
+  "plantuml.server": "https://www.plantuml.com/plantuml"
 }

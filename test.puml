@@ -1,0 +1,44 @@
+@startuml FiberClassDiagram
+
+namespace sylar {
+
+  ' 定义 Fiber 类
+  class Fiber {
+    +Fiber()
+    +Fiber(cb: std::function<void()>, stacksize: size_t = 0, run_in_scheduler: bool = true)
+    +~Fiber()
+    +reset(cb: std::function<void()>)
+    +resume()
+    +yield()
+    +getId(): uint64_t
+    +getState(): State
+
+    +SetThis(f: Fiber*)
+    +GetThis(): std::shared_ptr<Fiber>
+    +SetSchedulerFiber(f: Fiber*)
+    +GetFiberId(): uint64_t
+    +MainFunc()
+
+    -m_id: uint64_t = 0
+    -m_stacksize: uint32_t = 0
+    -m_state: State = READY
+    -m_ctx: ucontext_t
+    -m_stack: void*
+    -m_cb: std::function<void()>
+    -m_runInScheduler: bool
+    +m_mutex: std::mutex
+  }
+
+  ' 定义 Fiber 的内部枚举 State
+  enum Fiber::State {
+    READY
+    RUNNING
+    TERM
+  }
+
+}
+
+' Fiber 和 State 的关系
+Fiber --> Fiber::State : m_state
+
+@enduml
