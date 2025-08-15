@@ -25,12 +25,11 @@ namespace sylar
 		t_fiber = f;
 	}
 
-	// 获取当前线程的主协程
-	// 如果主协程不存在，则创建主协程
-	// 新增说明：
-	// GetThis 返回“当前正在运行”的协程对象（shared_ptr）。
-	// - 若 t_fiber 已存在：直接返回 t_fiber->shared_from_this()。
-	// - 若 t_fiber 不存在：构造主协程（t_thread_fiber），并将其设为默认调度协程（t_scheduler_fiber），然后返回主协程。
+	// 获取“当前线程的当前协程”（shared_ptr）
+	// 说明：
+	// - 若 t_fiber 已存在：直接返回当前协程 t_fiber->shared_from_this()（可能是主协程，也可能是子协程）。
+	// - 若 t_fiber 不存在：说明尚未初始化当前线程的主协程；此时构造主协程（t_thread_fiber），
+	//   并将其设为默认调度协程（t_scheduler_fiber），随后返回主协程。
 	std::shared_ptr<Fiber> Fiber::GetThis()
 	{
 		if (t_fiber)
@@ -41,7 +40,7 @@ namespace sylar
 		// 创建主协程
 		std::shared_ptr<Fiber> main_fiber(new Fiber());
 		t_thread_fiber = main_fiber;
-		t_scheduler_fiber = main_fiber.get(); // 除非主动设置，主协程默认为调度协程
+		t_scheduler_fiber = main_fiber.get(); // 默认为主协程作为调度协程，除非主动更改
 
 		assert(t_fiber == main_fiber.get());
 		return t_fiber->shared_from_this();
